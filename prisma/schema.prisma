@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Sala {
+  id        Int       @id @default(autoincrement())
+  estado    String
+  palabra   String
+  jugadores Jugador[]
+  dibujos   Dibujo[]
+}
+
+model Jugador {
+  id        Int     @id @default(autoincrement())
+  nombre    String
+  salaId    Int
+  anfitrion Boolean @default(false)
+  haDibujado Boolean @default(false) //me falta aplicar la migracion para agregar con npx prisma migrate dev --name agregar-haDibujado
+  haVotado  Boolean @default(false)
+  sala      Sala    @relation(fields: [salaId], references: [id])
+  votos     Voto[]
+  dibujos   Dibujo[]
+}
+
+model Dibujo {
+  id         Int     @id @default(autoincrement())
+  imagenBase64 String @db.LongText
+  jugadorId  Int
+  salaId     Int
+  jugador    Jugador @relation(fields: [jugadorId], references: [id])
+  sala       Sala    @relation(fields: [salaId], references: [id])
+  votos      Voto[]
+}
+
+model Voto {
+  id        Int     @id @default(autoincrement())
+  estrellas Int
+  dibujoId  Int
+  jugadorId Int
+  dibujo    Dibujo  @relation(fields: [dibujoId], references: [id])
+  jugador   Jugador @relation(fields: [jugadorId], references: [id])
+}
