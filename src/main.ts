@@ -4,9 +4,15 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // 👇 HABILITAR CORS PARA TODAS LAS RUTAS
-  app.enableCors();
+  // ✅ Habilitar CORS para permitir conexión desde Vercel u otros dominios
+  app.enableCors({
+    origin: '*', // o especificar Vercel si querés limitarlo
+  });
 
-  await app.listen(3000);
+  // ✅ Escuchar el puerto que proporciona Railway o fallback 3000
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+
+  console.log(`🚀 App corriendo en el puerto ${port}`);
 }
 bootstrap();
